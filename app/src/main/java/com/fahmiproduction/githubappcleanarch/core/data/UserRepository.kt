@@ -5,6 +5,7 @@ import androidx.lifecycle.map
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.LocalDataSource
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.RemoteDataSource
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.network.ApiResponse
+import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserDetailResponse
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserResponse
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
 import com.fahmiproduction.githubappcleanarch.core.domain.repository.IUserRepository
@@ -46,9 +47,33 @@ class UserRepository private constructor(
             override fun createCall(): LiveData<ApiResponse<List<UserResponse>>> =
                 remoteDataSource.getAllUser()
 
+
             override fun saveCallResult(data: List<UserResponse>) {
-                val UserList = DataMapper.mapResponsesToEntities(data)
-                localDataSource.insertUser(UserList)
+                val userList = DataMapper.mapResponsesToEntities(data)
+                localDataSource.insertUser(userList)
+            }
+        }.asLiveData()
+
+    override fun getDetailUser(username: String): LiveData<Resource<User>> =
+        object : NetworkBoundResource<User, UserDetailResponse>(appExecutors) {
+            override fun loadFromDB(): LiveData<User> {
+                return localDataSource.getDetailUser(username).map {
+                    DataMapper.mapEntityToDomain(it)
+                }
+            }
+
+            override fun createCall(): LiveData<ApiResponse<UserDetailResponse>> {
+                return remoteDataSource.getDetailUser(username)
+            }
+
+            override fun shouldFetch(data: User?): Boolean =
+//                data == null || data.isEmpty()
+                true // ganti dengan true jika ingin selalu mengambil data dari internet
+
+
+            override fun saveCallResult(data: UserDetailResponse) {
+                val userList = DataMapper.mapResponseToEntity(data)
+                localDataSource.insertUser(userList)
             }
         }.asLiveData()
 

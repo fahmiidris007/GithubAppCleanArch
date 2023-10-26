@@ -1,7 +1,6 @@
 package com.fahmiproduction.githubappcleanarch.core.data.source.remote.network
 
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.DetailUserResponse
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.ListUserResponse
+import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserDetailResponse
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -16,6 +15,6 @@ interface ApiService {
 
     @Headers("Authorization: token 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")
     @GET("users/{username}")
-    fun getDetail(@Path("username") username: String): Call<UserResponse>
+    fun getDetail(@Path("username") username: String): Call<UserDetailResponse>
 
 }

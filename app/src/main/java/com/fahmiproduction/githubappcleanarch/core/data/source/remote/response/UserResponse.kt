@@ -11,5 +11,5 @@ data class UserResponse(
 	val type: String,
 
 	@field:SerializedName("avatar_url")
-	val avatarUrl: String,
+	val avatarUrl: String
 )

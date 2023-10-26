@@ -17,9 +17,13 @@ class LocalDataSource private constructor(private val userDao: UserDao) {
 
     fun getAllUser(): LiveData<List<UserEntity>> = userDao.getAllUser()
 
+    fun getDetailUser(username: String): LiveData<UserEntity> = userDao.getDetailUser(username)
+
     fun getFavoriteUser(): LiveData<List<UserEntity>> = userDao.getFavoriteUser()
 
     fun insertUser(userList: List<UserEntity>) = userDao.insertUser(userList)
+
+    fun insertUser(user: UserEntity) = userDao.insertUser(user)
 
     fun setFavoriteUser(user: UserEntity, newState: Boolean) {
         user.isFavorite = newState

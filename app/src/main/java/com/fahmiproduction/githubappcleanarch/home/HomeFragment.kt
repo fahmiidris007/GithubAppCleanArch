@@ -1,27 +1,18 @@
 package com.fahmiproduction.githubappcleanarch.home
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.fahmiproduction.githubappcleanarch.R
 import com.fahmiproduction.githubappcleanarch.core.data.Resource
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.network.ApiConfig
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserResponse
 import com.fahmiproduction.githubappcleanarch.core.ui.ListUserAdapter
 import com.fahmiproduction.githubappcleanarch.core.ui.ViewModelFactory
 import com.fahmiproduction.githubappcleanarch.databinding.FragmentHomeBinding
 import com.fahmiproduction.githubappcleanarch.detail.DetailUserActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class HomeFragment : Fragment() {
@@ -48,32 +39,31 @@ class HomeFragment : Fragment() {
             userAdapter.onItemClick = { selectedData ->
                 val intent = Intent(activity, DetailUserActivity::class.java).apply {
                     putExtra(DetailUserActivity.EXTRA_DATA, selectedData.login)
-//                    putExtra(DetailUserActivity.EXTRA_POSITION, position)
                 }
-
                 startActivity(intent)
             }
 
             val factory = ViewModelFactory.getInstance(requireActivity())
             homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
 
-            homeViewModel.user.observe(viewLifecycleOwner, { user ->
+            homeViewModel.user.observe(viewLifecycleOwner) { user ->
                 if (user != null) {
                     when (user) {
                         is Resource.Loading -> binding.progressbar.visibility = View.VISIBLE
                         is Resource.Success -> {
-                            binding.rvUser.visibility=View.VISIBLE
+                            binding.rvUser.visibility = View.VISIBLE
                             binding.progressbar.visibility = View.GONE
                             binding.noData.visibility = View.GONE
                             userAdapter.setData(user.data)
                         }
+
                         is Resource.Error -> {
                             binding.progressbar.visibility = View.GONE
                             binding.noData.visibility = View.VISIBLE
                         }
                     }
                 }
-            })
+            }
 
             with(binding.rvUser) {
                 layoutManager = LinearLayoutManager(context)
@@ -81,10 +71,5 @@ class HomeFragment : Fragment() {
                 adapter = userAdapter
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

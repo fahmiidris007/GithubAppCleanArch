@@ -14,11 +14,17 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAllUser(): LiveData<List<UserEntity>>
 
+    @Query("SELECT * FROM user where login = :username")
+    fun getDetailUser(username: String): LiveData<UserEntity>
+
     @Query("SELECT * FROM user where isFavorite = 1")
     fun getFavoriteUser(): LiveData<List<UserEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(user: List<UserEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertUser(user: UserEntity)
 
     @Update
     fun updateFavoriteUser(user: UserEntity)

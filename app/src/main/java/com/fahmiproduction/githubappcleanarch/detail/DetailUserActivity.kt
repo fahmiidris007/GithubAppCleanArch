@@ -1,13 +1,13 @@
 package com.fahmiproduction.githubappcleanarch.detail
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.fahmiproduction.githubappcleanarch.R
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.DetailUserResponse
-import com.fahmiproduction.githubappcleanarch.core.domain.model.User
+import com.fahmiproduction.githubappcleanarch.core.data.Resource
 import com.fahmiproduction.githubappcleanarch.core.ui.ViewModelFactory
 import com.fahmiproduction.githubappcleanarch.databinding.ActivityDetailUserBinding
 
@@ -15,7 +15,6 @@ class DetailUserActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_DATA = "extra_data"
-        const val EXTRA_POSITION = "extra_position"
     }
 
     private lateinit var detailUserViewModel: DetailViewModel
@@ -29,10 +28,68 @@ class DetailUserActivity : AppCompatActivity() {
         val factory = ViewModelFactory.getInstance(this)
         detailUserViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
 
-        val idUser = intent.getStringExtra(EXTRA_DATA)
-        showDetailUser(idUser)
+        val username = intent.getStringExtra(EXTRA_DATA)
+        showDetailUser(username)
+
     }
 
-    private fun showDetailUser(idUser: String?) {}
+    private fun showDetailUser(username: String?) {
+        username?.let {
+            detailUserViewModel.getDetailUser(username).observe(this) { user ->
+                if (user != null) {
+                    when (user) {
+                        is Resource.Loading -> binding.progressbar.visibility = View.VISIBLE
+                        is Resource.Success -> {
+                            binding.apply {
+                                progressbar.visibility = View.GONE
+                                tvName.text = user.data?.name
+                                tvUsername.text = user.data?.login
+                                tvCompany.text = user.data?.company
+                                tvLocation.text = user.data?.location
+                                numOfRepo.text = user.data?.publicRepos.toString()
+                                tvFollowers.text = user.data?.followers.toString()
+                                tvFollowings.text = user.data?.following.toString()
+                            }
 
+                            Glide.with(this@DetailUserActivity)
+                                .load(user.data?.avatarUrl)
+                                .into(binding.ivAvatarImg)
+                        }
+
+                        is Resource.Error -> {
+                            binding.progressbar.visibility = View.GONE
+                            binding.noData.visibility = View.VISIBLE
+                        }
+                    }
+//                    var statusFavorite = user.data?.isFavorite
+//                    setStatusFavorite(statusFavorite)
+//                    binding.fabFavorite.setOnClickListener {
+//                        statusFavorite = !statusFavorite!!
+//                        detailUserViewModel.setFavoriteUser(user.data!!, statusFavorite)
+//                        setStatusFavorite(statusFavorite)
+//                    }
+                }
+
+            }
+        }
+    }
+
+
+    private fun setStatusFavorite(statusFavorite: Boolean?) {
+        if (statusFavorite == true) {
+            binding.fabFavorite.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this,
+                    R.drawable.baseline_favorite_24
+                )
+            )
+        } else {
+            binding.fabFavorite.setImageDrawable(
+                ContextCompat.getDrawable(
+                    this,
+                    R.drawable.baseline_favorite_border_24
+                )
+            )
+        }
+    }
 }
