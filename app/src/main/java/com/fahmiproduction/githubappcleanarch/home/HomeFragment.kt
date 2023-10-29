@@ -6,19 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fahmiproduction.githubappcleanarch.core.data.Resource
 import com.fahmiproduction.githubappcleanarch.core.ui.ListUserAdapter
-import com.fahmiproduction.githubappcleanarch.core.ui.ViewModelFactory
 import com.fahmiproduction.githubappcleanarch.databinding.FragmentHomeBinding
 import com.fahmiproduction.githubappcleanarch.detail.DetailUserActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
-
+    private val homeViewModel: HomeViewModel by viewModel()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -42,10 +40,7 @@ class HomeFragment : Fragment() {
                 }
                 startActivity(intent)
             }
-
-            val factory = ViewModelFactory.getInstance(requireActivity())
-            homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
-
+            
             homeViewModel.user.observe(viewLifecycleOwner) { user ->
                 if (user != null) {
                     when (user) {

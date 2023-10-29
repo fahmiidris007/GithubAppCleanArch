@@ -4,16 +4,7 @@ import com.fahmiproduction.githubappcleanarch.core.data.source.local.entity.User
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.room.UserDao
 import kotlinx.coroutines.flow.Flow
 
-class LocalDataSource private constructor(private val userDao: UserDao) {
-
-    companion object {
-        private var instance: LocalDataSource? = null
-
-        fun getInstance(userDao: UserDao): LocalDataSource =
-            instance ?: synchronized(this) {
-                instance ?: LocalDataSource(userDao)
-            }
-    }
+class LocalDataSource(private val userDao: UserDao) {
 
     fun getFavoriteUser(): Flow<List<UserEntity>> = userDao.getFavoriteUser()
 

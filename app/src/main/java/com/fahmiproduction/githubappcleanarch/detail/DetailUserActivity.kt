@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.fahmiproduction.githubappcleanarch.R
 import com.fahmiproduction.githubappcleanarch.core.data.Resource
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
-import com.fahmiproduction.githubappcleanarch.core.ui.ViewModelFactory
 import com.fahmiproduction.githubappcleanarch.databinding.ActivityDetailUserBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailUserActivity : AppCompatActivity() {
 
@@ -20,18 +19,13 @@ class DetailUserActivity : AppCompatActivity() {
 
     private var isFavorite = false
     private lateinit var userData: User
-
-
-    private lateinit var detailUserViewModel: DetailViewModel
+    private val detailViewModel: DetailViewModel by viewModel()
     private lateinit var binding: ActivityDetailUserBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val factory = ViewModelFactory.getInstance(this)
-        detailUserViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
 
         val username = intent.getStringExtra(EXTRA_DATA)
         showDetailUser(username)
@@ -40,7 +34,7 @@ class DetailUserActivity : AppCompatActivity() {
 
     private fun showDetailUser(username: String?) {
         username?.let {
-            detailUserViewModel.getDetailUser(username).observe(this) { user ->
+            detailViewModel.getDetailUser(username).observe(this) { user ->
 //                if (user != null) {
                 when (user) {
                     is Resource.Loading -> binding.progressbar.visibility = View.VISIBLE
@@ -62,7 +56,7 @@ class DetailUserActivity : AppCompatActivity() {
 
 
                         userData = user.data!!
-                        detailUserViewModel.getFavoriteState(username)
+                        detailViewModel.getFavoriteState(username)
                             ?.observe(this) { userData ->
                                 isFavorite = userData.isFavorite == true
                                 setStatusFavorite(isFavorite)
@@ -78,11 +72,11 @@ class DetailUserActivity : AppCompatActivity() {
                 binding.fabFavorite.setOnClickListener {
                     if (isFavorite) {
                         userData.isFavorite = !isFavorite
-                        detailUserViewModel.deleteFavoriteUser(user.data!!)
+                        detailViewModel.deleteFavoriteUser(user.data!!)
                         isFavorite = !isFavorite
                     } else {
                         userData.isFavorite = !isFavorite
-                        detailUserViewModel.insertFavoriteUser(user.data!!)
+                        detailViewModel.insertFavoriteUser(user.data!!)
                         isFavorite = !isFavorite
                     }
                     setStatusFavorite(isFavorite)

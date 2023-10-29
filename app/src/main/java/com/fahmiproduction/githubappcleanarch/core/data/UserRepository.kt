@@ -10,23 +10,10 @@ import com.fahmiproduction.githubappcleanarch.core.utils.DataMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class UserRepository private constructor(
+class UserRepository(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
 ) : IUserRepository {
-
-    companion object {
-        @Volatile
-        private var instance: UserRepository? = null
-
-        fun getInstance(
-            remoteData: RemoteDataSource,
-            localData: LocalDataSource
-        ): UserRepository =
-            instance ?: synchronized(this) {
-                instance ?: UserRepository(remoteData, localData)
-            }
-    }
 
     override fun getAllUser(): Flow<Resource<List<User>>> =
         object : NetworkBoundResource<List<User>, List<UserResponse>>() {

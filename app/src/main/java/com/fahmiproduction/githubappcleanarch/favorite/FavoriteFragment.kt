@@ -7,16 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fahmiproduction.githubappcleanarch.core.ui.ListUserAdapter
-import com.fahmiproduction.githubappcleanarch.core.ui.ViewModelFactory
 import com.fahmiproduction.githubappcleanarch.databinding.FragmentFavoriteBinding
 import com.fahmiproduction.githubappcleanarch.detail.DetailUserActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteFragment : Fragment() {
 
-    private lateinit var favoriteViewModel: FavoriteViewModel
+    private val favoriteViewModel: FavoriteViewModel by viewModel()
+
     private var _binding: FragmentFavoriteBinding? = null
     private val binding get() = _binding!!
 
@@ -41,11 +41,7 @@ class FavoriteFragment : Fragment() {
             }
             startActivity(intent)
         }
-
-
-        val factory = ViewModelFactory.getInstance(requireActivity())
-        favoriteViewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
-
+        
         favoriteViewModel.favoriteUser.observe(viewLifecycleOwner) { user ->
 
             user.let { userData ->
