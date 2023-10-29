@@ -19,4 +19,5 @@
     <string name="temp_following">999</string>
     <string name="followings">Following</string>
     <string name="favorite_button">Favorite Button</string>
+    <string name="title_list_favorite">List Favorite</string>
 </resources>

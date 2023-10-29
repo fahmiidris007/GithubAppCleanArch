@@ -51,7 +51,6 @@ class HomeFragment : Fragment() {
                     when (user) {
                         is Resource.Loading -> binding.progressbar.visibility = View.VISIBLE
                         is Resource.Success -> {
-                            binding.rvUser.visibility = View.VISIBLE
                             binding.progressbar.visibility = View.GONE
                             binding.noData.visibility = View.GONE
                             userAdapter.setData(user.data)
