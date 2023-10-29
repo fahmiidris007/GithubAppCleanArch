@@ -1,15 +1,18 @@
 package com.fahmiproduction.githubappcleanarch.core.domain.repository
 
-import androidx.lifecycle.LiveData
 import com.fahmiproduction.githubappcleanarch.core.data.Resource
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
+import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
 
-    fun getAllUser(): LiveData<Resource<List<User>>>
-    fun getDetailUser(username: String): LiveData<Resource<User>>
-    fun getFavoriteUser(): LiveData<List<User>>
+    fun getAllUser(): Flow<Resource<List<User>>>
+    fun getDetailUser(username: String): Flow<Resource<User>>
+    fun getFavoriteUser(): Flow<List<User>>
 
-    fun setFavoriteUser(user: User, state: Boolean)
+    fun getFavoriteState(username: String): Flow<User>?
+    suspend fun insertFavoriteUser(user: User)
+
+    suspend fun deleteFavoriteUser(user: User): Int
 
 }

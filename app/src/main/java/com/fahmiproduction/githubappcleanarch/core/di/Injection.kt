@@ -9,7 +9,6 @@ import com.fahmiproduction.githubappcleanarch.core.data.source.remote.network.Ap
 import com.fahmiproduction.githubappcleanarch.core.domain.repository.IUserRepository
 import com.fahmiproduction.githubappcleanarch.core.domain.usecase.UserInteractor
 import com.fahmiproduction.githubappcleanarch.core.domain.usecase.UserUseCase
-import com.fahmiproduction.githubappcleanarch.core.utils.AppExecutors
 
 object Injection {
     private fun provideRepository(context: Context): IUserRepository {
@@ -17,9 +16,8 @@ object Injection {
 
         val remoteDataSource = RemoteDataSource.getInstance(ApiConfig.provideApiService())
         val localDataSource = LocalDataSource.getInstance(database.userDao())
-        val appExecutors = AppExecutors()
 
-        return UserRepository.getInstance(remoteDataSource, localDataSource, appExecutors)
+        return UserRepository.getInstance(remoteDataSource, localDataSource)
     }
 
     fun provideUserUseCase(context: Context): UserUseCase {

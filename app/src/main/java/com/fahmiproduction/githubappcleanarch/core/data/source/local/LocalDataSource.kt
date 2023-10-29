@@ -1,8 +1,8 @@
 package com.fahmiproduction.githubappcleanarch.core.data.source.local
 
-import androidx.lifecycle.LiveData
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.entity.UserEntity
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.room.UserDao
+import kotlinx.coroutines.flow.Flow
 
 class LocalDataSource private constructor(private val userDao: UserDao) {
 
@@ -15,18 +15,13 @@ class LocalDataSource private constructor(private val userDao: UserDao) {
             }
     }
 
-    fun getAllUser(): LiveData<List<UserEntity>> = userDao.getAllUser()
+    fun getFavoriteUser(): Flow<List<UserEntity>> = userDao.getFavoriteUser()
 
-    fun getDetailUser(username: String): LiveData<UserEntity> = userDao.getDetailUser(username)
+    fun getFavoriteState(username: String): Flow<UserEntity>? =
+        userDao.getFavoriteState(username)
 
-    fun getFavoriteUser(): LiveData<List<UserEntity>> = userDao.getFavoriteUser()
+    suspend fun insertFavoriteUser(user: UserEntity) = userDao.insertFavoriteUser(user)
 
-    fun insertUser(userList: List<UserEntity>) = userDao.insertUser(userList)
+    suspend fun deleteFavoriteUser(user: UserEntity) = userDao.deleteFavoriteUser(user)
 
-    fun insertUser(user: UserEntity) = userDao.insertUser(user)
-
-    fun setFavoriteUser(user: UserEntity, newState: Boolean) {
-        user.isFavorite = newState
-        userDao.updateFavoriteUser(user)
-    }
 }

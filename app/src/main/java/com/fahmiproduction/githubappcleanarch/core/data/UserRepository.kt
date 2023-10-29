@@ -1,21 +1,18 @@
 package com.fahmiproduction.githubappcleanarch.core.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.LocalDataSource
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.RemoteDataSource
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.network.ApiResponse
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserDetailResponse
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserResponse
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
 import com.fahmiproduction.githubappcleanarch.core.domain.repository.IUserRepository
-import com.fahmiproduction.githubappcleanarch.core.utils.AppExecutors
 import com.fahmiproduction.githubappcleanarch.core.utils.DataMapper
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class UserRepository private constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
-    private val appExecutors: AppExecutors
 ) : IUserRepository {
 
     companion object {
@@ -24,68 +21,57 @@ class UserRepository private constructor(
 
         fun getInstance(
             remoteData: RemoteDataSource,
-            localData: LocalDataSource,
-            appExecutors: AppExecutors
+            localData: LocalDataSource
         ): UserRepository =
             instance ?: synchronized(this) {
-                instance ?: UserRepository(remoteData, localData, appExecutors)
+                instance ?: UserRepository(remoteData, localData)
             }
     }
 
-    override fun getAllUser(): LiveData<Resource<List<User>>> =
-        object : NetworkBoundResource<List<User>, List<UserResponse>>(appExecutors) {
-            override fun loadFromDB(): LiveData<List<User>> {
-                return localDataSource.getAllUser().map {
-                    DataMapper.mapEntitiesToDomain(it)
-                }
+    override fun getAllUser(): Flow<Resource<List<User>>> =
+        object : NetworkBoundResource<List<User>, List<UserResponse>>() {
+            override fun loadFromNetwork(data: List<UserResponse>): Flow<List<User>> {
+                return DataMapper.mapResponsesToDomain(data)
             }
 
-            override fun shouldFetch(data: List<User>?): Boolean =
-//                data == null || data.isEmpty()
-                true // ganti dengan true jika ingin selalu mengambil data dari internet
-
-            override fun createCall(): LiveData<ApiResponse<List<UserResponse>>> =
-                remoteDataSource.getAllUser()
-
-
-            override fun saveCallResult(data: List<UserResponse>) {
-                val userList = DataMapper.mapResponsesToEntities(data)
-                localDataSource.insertUser(userList)
+            override suspend fun createCall(): Flow<ApiResponse<List<UserResponse>>> {
+                return remoteDataSource.getAllUser()
             }
-        }.asLiveData()
+        }.asFlow()
 
-    override fun getDetailUser(username: String): LiveData<Resource<User>> =
-        object : NetworkBoundResource<User, UserDetailResponse>(appExecutors) {
-            override fun loadFromDB(): LiveData<User> {
-                return localDataSource.getDetailUser(username).map {
-                    DataMapper.mapEntityToDomain(it)
-                }
+    override fun getDetailUser(username: String): Flow<Resource<User>> =
+        object : NetworkBoundResource<User, UserResponse>() {
+            override fun loadFromNetwork(data: UserResponse): Flow<User> {
+                return DataMapper.mapResponseToDomain(data)
             }
 
-            override fun createCall(): LiveData<ApiResponse<UserDetailResponse>> {
+            override suspend fun createCall(): Flow<ApiResponse<UserResponse>> {
                 return remoteDataSource.getDetailUser(username)
             }
-
-            override fun shouldFetch(data: User?): Boolean =
-//                data == null || data.isEmpty()
-                true // ganti dengan true jika ingin selalu mengambil data dari internet
+        }.asFlow()
 
 
-            override fun saveCallResult(data: UserDetailResponse) {
-                val userList = DataMapper.mapResponseToEntity(data)
-                localDataSource.insertUser(userList)
-            }
-        }.asLiveData()
-
-    override fun getFavoriteUser(): LiveData<List<User>> {
+    override fun getFavoriteUser(): Flow<List<User>> {
         return localDataSource.getFavoriteUser().map {
             DataMapper.mapEntitiesToDomain(it)
         }
     }
 
-    override fun setFavoriteUser(user: User, state: Boolean) {
-        val userEntity = DataMapper.mapDomainToEntity(user)
-        appExecutors.diskIO().execute { localDataSource.setFavoriteUser(userEntity, state) }
+    override fun getFavoriteState(username: String): Flow<User>? {
+        return localDataSource.getFavoriteState(username)?.map {
+            DataMapper.mapEntityToDomain(it)
+        }
     }
+
+    override suspend fun insertFavoriteUser(user: User) {
+        val userEntity = DataMapper.mapDomainToEntity(user)
+        return localDataSource.insertFavoriteUser(userEntity)
+    }
+
+    override suspend fun deleteFavoriteUser(user: User): Int {
+        val userEntity = DataMapper.mapDomainToEntity(user)
+        return localDataSource.deleteFavoriteUser(userEntity)
+    }
+
 }
 

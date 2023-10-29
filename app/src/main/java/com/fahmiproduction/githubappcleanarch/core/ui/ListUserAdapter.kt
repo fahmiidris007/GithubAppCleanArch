@@ -3,15 +3,11 @@ package com.fahmiproduction.githubappcleanarch.core.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fahmiproduction.githubappcleanarch.R
-import com.fahmiproduction.githubappcleanarch.core.data.source.remote.response.UserResponse
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
 import com.fahmiproduction.githubappcleanarch.databinding.ItemListUserBinding
-import java.util.ArrayList
 
 class ListUserAdapter : RecyclerView.Adapter<ListUserAdapter.ListViewHolder>() {
 
@@ -26,7 +22,9 @@ class ListUserAdapter : RecyclerView.Adapter<ListUserAdapter.ListViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_user, parent, false))
+        ListViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_list_user, parent, false)
+        )
 
     override fun getItemCount() = listData.size
 
@@ -44,7 +42,7 @@ class ListUserAdapter : RecyclerView.Adapter<ListUserAdapter.ListViewHolder>() {
                     .circleCrop()
                     .into(ivAvatarImg)
                 tvItemName.text = data.login
-                tvItemType.text=data.type
+                tvItemType.text = data.type
             }
         }
 

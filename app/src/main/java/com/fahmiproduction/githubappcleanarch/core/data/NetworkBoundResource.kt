@@ -1,76 +1,33 @@
 package com.fahmiproduction.githubappcleanarch.core.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import com.fahmiproduction.githubappcleanarch.core.data.source.remote.network.ApiResponse
-import com.fahmiproduction.githubappcleanarch.core.utils.AppExecutors
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
-abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecutors: AppExecutors) {
+abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    private val result = MediatorLiveData<Resource<ResultType>>()
+    private val result: Flow<Resource<ResultType>> = flow {
+        emit(Resource.Loading())
+        when (val apiResponse = createCall().first()) {
+            is ApiResponse.Success -> {
+                emitAll(loadFromNetwork(apiResponse.data).map {
+                    Resource.Success(it)
+                })
+            }
 
-    init {
-        result.value = Resource.Loading(null)
-
-        @Suppress("LeakingThis")
-        val dbSource = loadFromDB()
-
-        result.addSource(dbSource) { data ->
-            result.removeSource(dbSource)
-            if (shouldFetch(data)) {
-                fetchFromNetwork(dbSource)
-            } else {
-                result.addSource(dbSource) { newData ->
-                    result.value = Resource.Success(newData)
-                }
+            is ApiResponse.Error -> {
+                emit(Resource.Error<ResultType>(apiResponse.errorMessage))
             }
         }
     }
 
-    protected open fun onFetchFailed() {}
 
-    protected abstract fun loadFromDB(): LiveData<ResultType>
+    protected abstract fun loadFromNetwork(data: RequestType): Flow<ResultType>
 
-    protected abstract fun shouldFetch(data: ResultType?): Boolean
+    protected abstract suspend fun createCall(): Flow<ApiResponse<RequestType>>
 
-    protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>
-
-    protected abstract fun saveCallResult(data: RequestType)
-
-    private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
-
-        val apiResponse = createCall()
-
-        result.addSource(dbSource) { newData ->
-            result.value = Resource.Loading(newData)
-        }
-        result.addSource(apiResponse) { response ->
-            result.removeSource(apiResponse)
-            result.removeSource(dbSource)
-            when (response) {
-                is ApiResponse.Success ->
-                    mExecutors.diskIO().execute {
-                        saveCallResult(response.data)
-                        mExecutors.mainThread().execute {
-                            result.addSource(loadFromDB()) { newData ->
-                                result.value = Resource.Success(newData)
-                            }
-                        }
-                    }
-                is ApiResponse.Empty -> mExecutors.mainThread().execute {
-                    result.addSource(loadFromDB()) { newData ->
-                        result.value = Resource.Success(newData)
-                    }
-                }
-                is ApiResponse.Error -> {
-                    onFetchFailed()
-                    result.addSource(dbSource) { newData ->
-                        result.value = Resource.Error(response.errorMessage, newData)
-                    }
-                }
-            }
-        }
-    }
-
-    fun asLiveData(): LiveData<Resource<ResultType>> = result
+    fun asFlow(): Flow<Resource<ResultType>> = result
 }

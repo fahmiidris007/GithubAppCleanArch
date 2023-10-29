@@ -9,33 +9,34 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user")
 data class UserEntity(
     @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "login")
     var login: String,
 
     @ColumnInfo(name = "type")
-    var type: String? = null,
+    var type: String?,
 
     @ColumnInfo(name = "avatarUrl")
-    var avatarUrl: String? = null,
+    var avatarUrl: String?,
 
     @ColumnInfo(name = "company")
-    var company: String? = null,
+    var company: String?,
 
     @ColumnInfo(name = "publicRepos")
-    var publicRepos: Int? = null,
+    var publicRepos: Int?,
 
     @ColumnInfo(name = "followers")
-    var followers: Int? = null,
+    var followers: Int?,
 
     @ColumnInfo(name = "following")
-    var following: Int? = null,
+    var following: Int?,
 
     @ColumnInfo(name = "name")
-    var name: String? = null,
+    var name: String?,
 
     @ColumnInfo(name = "location")
-    var location: String? = null,
+    var location: String?,
 
     @ColumnInfo(name = "isFavorite")
-    var isFavorite: Boolean? = null,
+    var isFavorite: Boolean?,
 )

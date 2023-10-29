@@ -53,9 +53,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    implementation ("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation ("androidx.multidex:multidex:2.0.1")
-
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.multidex:multidex:2.0.1")
 
 
 //    Retrofit
@@ -68,20 +67,18 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
     implementation("com.google.android.material:material:1.10.0")
-    implementation ("androidx.cardview:cardview:1.0.0")
-    implementation ("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
 
-//    Room
-    implementation ("androidx.room:room-runtime:2.5.2")
-    kapt ("androidx.room:room-compiler:2.5.2")
-    androidTestImplementation ("androidx.room:room-testing:2.5.2")
-
-//    Viewmodel + live data
+//    Room , view model , live data, coroutines flow
+    implementation("androidx.room:room-runtime:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
+    kapt("androidx.room:room-compiler:2.5.2")
+    androidTestImplementation("androidx.room:room-testing:2.5.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-
-
-
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
 
 }

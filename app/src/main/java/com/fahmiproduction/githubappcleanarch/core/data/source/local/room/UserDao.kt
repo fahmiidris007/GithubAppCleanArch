@@ -1,31 +1,25 @@
 package com.fahmiproduction.githubappcleanarch.core.data.source.local.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.fahmiproduction.githubappcleanarch.core.data.source.local.entity.UserEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
 
     @Query("SELECT * FROM user")
-    fun getAllUser(): LiveData<List<UserEntity>>
+    fun getFavoriteUser(): Flow<List<UserEntity>>
 
-    @Query("SELECT * FROM user where login = :username")
-    fun getDetailUser(username: String): LiveData<UserEntity>
-
-    @Query("SELECT * FROM user where isFavorite = 1")
-    fun getFavoriteUser(): LiveData<List<UserEntity>>
+    @Query("SELECT * FROM user WHERE login = :username")
+    fun getFavoriteState(username: String): Flow<UserEntity>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(user: List<UserEntity>)
+    suspend fun insertFavoriteUser(user: UserEntity?)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(user: UserEntity)
-
-    @Update
-    fun updateFavoriteUser(user: UserEntity)
+    @Delete
+    suspend fun deleteFavoriteUser(user: UserEntity): Int
 }
