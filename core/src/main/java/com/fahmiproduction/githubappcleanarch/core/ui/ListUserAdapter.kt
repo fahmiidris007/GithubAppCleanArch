@@ -5,9 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.fahmiproduction.githubappcleanarch.R
+import com.fahmiproduction.githubappcleanarch.core.R
+import com.fahmiproduction.githubappcleanarch.core.databinding.ItemListUserBinding
 import com.fahmiproduction.githubappcleanarch.core.domain.model.User
-import com.fahmiproduction.githubappcleanarch.databinding.ItemListUserBinding
 
 class ListUserAdapter : RecyclerView.Adapter<ListUserAdapter.ListViewHolder>() {
 

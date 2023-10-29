@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
                 }
                 startActivity(intent)
             }
-            
+
             homeViewModel.user.observe(viewLifecycleOwner) { user ->
                 if (user != null) {
                     when (user) {

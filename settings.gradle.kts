@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GithubAppCleanArch"
 include(":app")
- 
+include(":core")

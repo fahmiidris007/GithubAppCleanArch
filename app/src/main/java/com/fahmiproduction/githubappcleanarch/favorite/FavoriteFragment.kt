@@ -41,7 +41,7 @@ class FavoriteFragment : Fragment() {
             }
             startActivity(intent)
         }
-        
+
         favoriteViewModel.favoriteUser.observe(viewLifecycleOwner) { user ->
 
             user.let { userData ->
