@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    id("com.android.dynamic-feature")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("kotlin-parcelize")
@@ -8,17 +8,11 @@ plugins {
 apply("../shared_dependencies.kts")
 
 android {
-    namespace = "com.fahmiproduction.githubappcleanarch"
-    compileSdk = 34
+    namespace = "com.fahmiproduction.githubappcleanarch.favorite"
+    compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.fahmiproduction.githubappcleanarch"
         minSdk = 24
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
-        multiDexEnabled = true
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,11 +25,9 @@ android {
             )
         }
     }
-
     buildFeatures {
         viewBinding = true
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -43,9 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    dynamicFeatures += setOf(":favorite")
 }
 
 dependencies {
+    implementation(project(":app"))
     implementation(project(":core"))
 }

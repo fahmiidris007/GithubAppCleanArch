@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fahmiproduction.githubappcleanarch.core.ui.ListUserAdapter
-import com.fahmiproduction.githubappcleanarch.databinding.FragmentFavoriteBinding
 import com.fahmiproduction.githubappcleanarch.detail.DetailUserActivity
+import com.fahmiproduction.githubappcleanarch.favorite.databinding.FragmentFavoriteBinding
+import com.fahmiproduction.githubappcleanarch.favorite.di.favoriteViewModelModule
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.loadKoinModules
 
 class FavoriteFragment : Fragment() {
 
@@ -25,6 +27,7 @@ class FavoriteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        loadKoinModules(favoriteViewModelModule)
         return binding.root
     }
 
